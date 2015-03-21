@@ -12,7 +12,7 @@
 
 * `TWITTER_CONSUMER_KEY`: a Twitter app key
 * `TWITTER_CONSUMER_SECRET`: a Twitter app key secret
-* `TWEET_INTERVAL`: time between tweets, in seconds. Optional, defaults to 3 hours (3600).
+* `TWEET_INTERVAL`: time between tweets, in seconds. Optional, defaults to 3 hours (10,800).
 * `OAUTH_ENABLED`: if True (or yes, or 1), botkit will run a web interface for obtaining oauth keys.
 
 ## Example projects
@@ -28,7 +28,7 @@ Two sample bot projects are available that use `botkit`:
 * More flexible tweet timing options
 * More extensive documentation & commenting
 
-### the future
+### The future...
 
 * sensible way of passing around Tweepy API / allowing bot code to read from Twitter.
 
