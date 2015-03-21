@@ -19,7 +19,7 @@
 Two sample bot projects are available that use `botkit`:
 
 * [asciibot][1], which tweets random lines from [textfiles.com][2].
-* [ragebot][3], which tweets lines from Dylan Thomas's poem [*Do not go gentle into that good night*][4].
+* [burningraving][3], which tweets lines from Dylan Thomas's poem [*Do not go gentle into that good night*][4].
 
 ## Roadmap
 
@@ -34,6 +34,6 @@ Two sample bot projects are available that use `botkit`:
 
 [1]: https://github.com/prehensile/asciibot
 [2]: http://www.textfiles.com/
-[3]: https://github.com/prehensile/ragebot
+[3]: https://github.com/prehensile/burningraving
 [4]: http://www.poets.org/poetsorg/poem/do-not-go-gentle-good-night
 
