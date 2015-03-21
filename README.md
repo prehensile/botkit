@@ -28,6 +28,10 @@ Two sample bot projects are available that use `botkit`:
 * More flexible tweet timing options
 * More extensive documentation & commenting
 
+### the future
+
+* sensible way of passing around Tweepy API / allowing bot code to read from Twitter.
+
 [1]: https://github.com/prehensile/asciibot
 [2]: http://www.textfiles.com/
 [3]: https://github.com/prehensile/ragebot
