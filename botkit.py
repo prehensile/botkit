@@ -61,7 +61,7 @@ class BotKit( object ):
                         tweet = generator.generate()
                     except Exception:
                         pass
-                    if tweet:
+                    if tweet and (len(tweet)>1):
                         logging.info( tweet )
                         connector.tweet( tweet )
                 else:
