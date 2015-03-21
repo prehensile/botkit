@@ -26,7 +26,6 @@ class BotKit( object ):
 
         # twitter connector & tweet generator
         consumer_token = config.twitter_consumer_token()
-        access_token = config.twitter_access_token()
 
         # start web UI if enabled
         if config.oauth_enabled():
@@ -36,7 +35,6 @@ class BotKit( object ):
                 global access_token
                 logging.info( "Token received, saving...")
                 config.save_twitter_access_token( token=token, secret=token_secret )
-                access_token = [ token, token_secret ]
             # init oauth web UI
             oauth = oauthclient.WebInterface( api_key=consumer_token[0],
                 api_secret=consumer_token[1], save_token_callback=save_access_token )
@@ -50,6 +48,10 @@ class BotKit( object ):
             logging.info( "Enter main runloop..." )
             while RUNNING:
                 logging.info( "Main runloop tick...")
+                
+                # reload access token in case it's changed
+                access_token = config.twitter_access_token()
+                
                 if (access_token is not None) and (consumer_token is not None):
                     logging.info( "Token set, will tweet..." )
                     connector = twitterconnector.TwitterConnector(
@@ -64,9 +66,17 @@ class BotKit( object ):
                     if tweet and (len(tweet)>1):
                         logging.info( tweet )
                         connector.tweet( tweet )
+
+                    # sleep for TWEET_INTERVAL, potentially a long time
+                    logging.info( "Sleeping for %d seconds..." % TWEET_INTERVAL )
+                    time.sleep( TWEET_INTERVAL )
+                
                 else:
                     logging.info( "No token set, doing nothing..." )
-                time.sleep( TWEET_INTERVAL ) 
+                    logging.debug( "-> access_token: %s, consumer_token: %s", access_token, consumer_token )
+                    # sleep for a short period, waiting for token
+                    time.sleep( 1 )
+
         except KeyboardInterrupt:
             pass
 
