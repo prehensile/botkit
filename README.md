@@ -5,7 +5,7 @@
 
 ## Overview 
 
-`botkit` is a toolkit for the creation of Twitter bots, written in Python. It is intended to take care of the tricky and annoying stuff (like obtaining OAuth tokens and scheduling tweets) so you can
+`botkit` is a toolkit for the creation of Twitter bots, written in Python. It is intended to take care of the tricky and annoying stuff (like obtaining OAuth tokens and scheduling tweets) so you can get on with writing the interesting bits.
 
 ## Configuration 
 `botkit` is configured with a few environment variables:
@@ -25,8 +25,8 @@ Two sample bot projects are available that use `botkit`:
 
 ### Version 0.2
 
-* More flexible tweet timing options
-* More extensive documentation & commenting
+* More flexible tweet timing options,
+* More extensive documentation & comments.
 
 ### The future...
 
