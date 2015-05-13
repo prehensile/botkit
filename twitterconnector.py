@@ -1,5 +1,6 @@
 import tweepy
 
+
 class TwitterConnector( object ):
 
     def __init__( self, consumer_key=None, consumer_secret=None,
@@ -17,10 +18,18 @@ class TwitterConnector( object ):
             self._api = tweepy.API( auth )
         return self._api
 
-    def tweet( self, status ):
+    def tweet( self, status, in_reply_to_status_id=None ):
         this_api = self.api()
         if this_api is not None:
             try:
-                this_api.update_status( status=status )
+                this_api.update_status( status=status, in_reply_to_status_id=in_reply_to_status_id )
             except tweepy.error.TweepError as e:
                 print e.reason
+
+    def mentions( self, since_id=None ):
+        this_api = self.api()
+        return this_api.mentions_timeline( since_id=since_id )
+
+    def self_username( self ):
+        this_api = self.api()
+        return this_api.me().screen_name

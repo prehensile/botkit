@@ -1,10 +1,13 @@
 import os 
 import logging
 
+TWITTER_ACCESS_TOKEN_KEY = "TWITTER_ACCESS_TOKEN"
+
 class ConfigHandler( object ):
 
-    def __init__( self, pth_root=None ):
+    def __init__( self, pth_root=None, persist_twitter_credentials_to_file=False ):
         self._pth_root = pth_root
+        self._persist_twitter_credentials_to_file = persist_twitter_credentials_to_file
 
     def parse_boolean( self, var=None ):
         ret = False
@@ -23,18 +26,35 @@ class ConfigHandler( object ):
         return os.path.join( self._pth_root, fn_resource )
 
     def save_twitter_access_token( self, token=None, secret=None ):
-        pth_creds = self.path_for_resource( "twitter_creds" )
-        fh_creds = open( pth_creds, "w" )
-        fh_creds.write( "%s\n%s" % (token,secret) )
-        fh_creds.close()
+        lines_out = "%s\n%s" % (token,secret)
+        logging.info( "save token: %s" % lines_out )
+        if self._persist_twitter_credentials_to_file:
+            pth_creds = self.path_for_resource( "twitter_creds" )
+            fh_creds = open( pth_creds, "w" )
+            fh_creds.write( lines_out )
+            fh_creds.close()
+        os.environ[ TWITTER_ACCESS_TOKEN_KEY ] = lines_out
 
     def twitter_access_token( self ):
+        """
+        Load Twitter access token. Try environment variables first, then disk.
+        """
+        lines = os.environ.get( TWITTER_ACCESS_TOKEN_KEY )
+        if lines is not None:
+            # lines were in environment, prepare for parsing
+            lines = lines.decode('string_escape')
+            lines = lines.split("\n")
+        else:
+            # lines weren't in environment, try reading from disk
+            pth_creds = self.path_for_resource( "twitter_creds" )
+            if os.path.exists( pth_creds ):
+                fh_creds = open( pth_creds )
+                lines = fh_creds.readlines()
+                fh_creds.close()
+        # parse & tidy lines to list & return
         ret = None
-        pth_creds = self.path_for_resource( "twitter_creds" )
-        if os.path.exists( pth_creds ):
-            fh_creds = open( pth_creds )
-            lines = fh_creds.readlines()
-            fh_creds.close()
+        if lines:
+            logging.info( "twitter_access_token loaded: %s" % lines )
             ret = []
             for line in lines:
                 ret.append( line.rstrip() )
