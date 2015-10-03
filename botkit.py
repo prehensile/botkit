@@ -77,13 +77,15 @@ class BotKit( object ):
                 prefix = "@%s " % to_username
                 chunk_length -= len(prefix)
             chunks = utils.chunk_string( tweet, chunk_length )
+            reply_to_status_id = in_reply_to_status_id
             for chunk in chunks:
                 if prefix is not None:
                     chunk = "%s%s" % (prefix, chunk)
-                connector.tweet(
+                new_status = connector.tweet(
                     chunk,
-                    in_reply_to_status_id=in_reply_to_status_id
+                    in_reply_to_status_id=reply_to_status_id
                 )
+                reply_to_status_id = new_status.id_str
 
 
     def run( self, generator ):

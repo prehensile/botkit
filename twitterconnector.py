@@ -1,4 +1,5 @@
 import tweepy
+import logging
 
 
 class TwitterConnector( object ):
@@ -22,9 +23,9 @@ class TwitterConnector( object ):
         this_api = self.api()
         if this_api is not None:
             try:
-                this_api.update_status( status=status, in_reply_to_status_id=in_reply_to_status_id )
+                return this_api.update_status( status=status, in_reply_to_status_id=in_reply_to_status_id )
             except tweepy.error.TweepError as e:
-                print e.reason
+                logging.exception( e )
 
     def mentions( self, since_id=None ):
         this_api = self.api()
