@@ -2,29 +2,32 @@ import confighandler
 import oauthclient
 import time
 import twitterconnector
-import os
 import logging
 import platformutils
 import utils
+import os
 
 
 class BotKit( object ):
 
 
-    def __init__( self, bot_name, debug_mode=False, tweet_interval=10800,
-                    last_mention_id=None, reply_direct_only=True ):
-        self._bot_name = bot_name
-        self._last_mention_id = last_mention_id
-        self._debug_mode = debug_mode
-        self._default_interval = tweet_interval
+    def __init__( self, bot_name, debug_mode=False, tweet_interval=None, reply_direct_only=True ):
+        self._bot_name          = bot_name
+        self._last_mention_id   = None
+        self._debug_mode        = debug_mode
+        self._tweet_interval    = tweet_interval
         self._reply_direct_only = reply_direct_only
 
 
     def do_replies( self, connector, generator ):
+        
+        # get a list of mentions
         mentions = None
         if self._last_mention_id is not None:
+            # if we've got a last_mention_id, only reply to mentions since that
             mentions = connector.mentions( since_id=self._last_mention_id )
         else:
+            # otherwise, replty to everything
             mentions = connector.mentions()
         
         last_id = self._last_mention_id
@@ -33,20 +36,23 @@ class BotKit( object ):
             process_mention = True
             
             if self._reply_direct_only:
+                # if reply_direct_only is set, only reply to tweets that begin with this bot's username
                 self_username = connector.self_username()
                 process_mention = mention_body.startswith( "@%s" % self_username )
             
             if process_mention:
-                # strip @usernames from beginning of replies
+                # strip @usernames from beginning of mentions
                 if mention_body.startswith( "@" ):
                     mention_body = mention_body[mention_body.index(" ")+1:].lstrip()
                 
                 try:
+                    # ask generator for a reply to this mention
                     tweet = generator.reply(
                         mention_body,
                         to_username=mention.author.screen_name,
                         to_userid=mention.author.id_str
                     )
+                    # tweet out generated reply
                     self.do_tweet(
                         connector,
                         tweet,
@@ -70,21 +76,31 @@ class BotKit( object ):
             logging.info( "do_tweet DEBUG MODE, would tweet: %s" % tweet )
         
         elif tweet and (len(tweet)>1):
+            
             logging.info( tweet )
+            
+            # split tweet up into chunk_length sized chunks
             prefix = None
             chunk_length = 140
             if to_username:
+                # if we're replying, set prefix to @username 
+                # and subtract the length of prefix from chunk_length
                 prefix = "@%s " % to_username
                 chunk_length -= len(prefix)
             chunks = utils.chunk_string( tweet, chunk_length )
+            
             reply_to_status_id = in_reply_to_status_id
+            
+            # tweet out chunks
             for chunk in chunks:
                 if prefix is not None:
+                    # prepend prefix to each chunk
                     chunk = "%s%s" % (prefix, chunk)
                 new_status = connector.tweet(
                     chunk,
                     in_reply_to_status_id=reply_to_status_id
                 )
+                # each new chunk replies to the last, make threaded replies make sense
                 reply_to_status_id = new_status.id_str
 
 
@@ -93,15 +109,16 @@ class BotKit( object ):
         # init logging
         platformutils.init_logging()
 
-        # init config, get twitter creds
-        pth_root = os.path.expanduser( "~/.botkit" )
-        pth_root = os.path.join( pth_root, self._bot_name )
-        if not os.path.exists( pth_root ):
-            os.makedirs( pth_root )
-        config = confighandler.ConfigHandler( pth_root=pth_root )
+        # init config
+        config = confighandler.ConfigHandler( bot_name=self._bot_name )
 
         # twitter connector & tweet generator
         consumer_token = config.twitter_consumer_token()
+
+        # get last mention id from environment, if set
+        last_mention_id = os.environ.get( "LAST_MENTION_ID" )
+        if last_mention_id is not None:
+            self._last_mention_id = int(last_mention_id)
 
         # start web UI if enabled
         if config.oauth_enabled():
@@ -122,13 +139,11 @@ class BotKit( object ):
             )
             oauth.start()
 
+        RUNNING = True
+        logging.info( "Enter main runloop..." )
+        TWEET_INTERVAL = config.tweet_interval( default_value=self._tweet_interval )
         try:
             # main runloop
-            TWEET_INTERVAL = config.tweet_interval(
-                default_value=self._default_interval
-            )
-            RUNNING = True
-            logging.info( "Enter main runloop..." )
             while RUNNING:
                 logging.info( "Main runloop tick...")
                 

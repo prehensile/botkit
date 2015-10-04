@@ -1,6 +1,6 @@
 # botkit
 
-* Version 0.1 (March 2015)
+* Version 0.3 (October 2015)
 * Author: Henry Cooke, me@prehensile.co.uk
 
 ## Overview 
@@ -10,10 +10,16 @@
 ## Configuration 
 `botkit` is configured with a few environment variables:
 
+### Required configuration
 * `TWITTER_CONSUMER_KEY`: a Twitter app key
 * `TWITTER_CONSUMER_SECRET`: a Twitter app key secret
-* `TWEET_INTERVAL`: time between tweets, in seconds. Optional, defaults to 3 hours (10,800).
+
+### Optional configuration
+* `TWEET_INTERVAL`: time between tweets, in seconds. Defaults to 3 hours (10,800).
 * `OAUTH_ENABLED`: if True (or yes, or 1), botkit will run a web interface for obtaining oauth keys.
+* `BOTKIT_ROOT`: path to a directory in which to store persistent configuration files. Defaults to `~/botkit`
+* `LAST_MENTION_ID`: Used when starting up; for bots which reply to things, only tweets newer than this id will be replied to.
+
 
 ## Example projects
 Two sample bot projects are available that use `botkit`:
@@ -23,14 +29,10 @@ Two sample bot projects are available that use `botkit`:
 
 ## Roadmap
 
-### Version 0.2
+### Version 0.4
 
 * More flexible tweet timing options,
 * More extensive documentation & comments.
-
-### The future...
-
-* sensible way of passing around Tweepy API / allowing bot code to read from Twitter.
 
 [1]: https://github.com/prehensile/asciibot
 [2]: http://www.textfiles.com/

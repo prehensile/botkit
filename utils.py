@@ -1,5 +1,21 @@
 import re
 
+
+def parse_boolean( var=None ):
+    if var is not None:
+        if type(var) is bool:
+            return var
+        elif type(var) is int:
+            return var == 1
+        try:
+            return int(var) == 1
+        except ValueError:
+            if (var.lower() != "false") and \
+                (var.lower() != "no"):
+                return True
+    return False
+
+
 def chunk_string( str_in, max_chunk_length ):
 
     l = len(str_in)
