@@ -59,10 +59,11 @@ class BotKit( object ):
                         to_username=mention.author.screen_name,
                         in_reply_to_status_id=mention.id_str
                     )
-                    if (last_id is None) or (mention.id > last_id):
-                        last_id = mention.id
                 except Exception as e:
                     logging.exception( e )
+
+            if (last_id is None) or (mention.id > last_id):
+                last_id = mention.id
 
         self._last_mention_id = last_id
 
